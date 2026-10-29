@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="An offline-first study app for the constructed language Numa.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <title>Numa — Learn your language</title>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="Numa home"><span class="brand-mark">N</span><span><b>Numa</b><small>language notebook</small></span></a>
+    <button id="installButton" class="install-button hidden" type="button">Install app</button>
+  </header>
+  <main id="app" class="app-shell">
+    <section class="hero">
+      <div class="eyebrow">YOUR LANGUAGE, YOUR PACE</div>
+      <h1>Learn Numa.<br><span>One word at a time.</span></h1>
+      <p>Practice vocabulary, explore grammar, and build your own writing system. Works offline after the first visit.</p>
+      <div class="hero-actions">
+        <button class="primary" data-go="study">Start studying <span aria-hidden="true">→</span></button>
+        <button class="secondary" data-go="dictionary">Open dictionary</button>
+      </div>
+      <div class="progress-panel">
+        <div class="progress-heading"><span>Your progress</span><strong id="progressLabel">0 mastered</strong></div>
+        <div class="progress-track"><div id="progressBar" class="progress-fill"></div></div>
+        <div class="progress-foot"><span id="wordCount">0 words in dictionary</span><span id="streakLabel">Keep your streak going</span></div>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="Main navigation">
+      <button class="tab active" data-tab="home">Home</button>
+      <button class="tab" data-tab="study">Study</button>
+      <button class="tab" data-tab="dictionary">Dictionary</button>
+      <button class="tab" data-tab="grammar">Grammar</button>
+      <button class="tab" data-tab="script">Script</button>
+    </nav>
+
+    <section id="view-home" class="view">
+      <div class="section-heading"><div><div class="eyebrow">A LITTLE EVERY DAY</div><h2>Pick up where you left off</h2></div></div>
+      <div class="feature-grid">
+        <button class="feature-card blue" data-go="study"><span class="feature-icon">↔</span><b>Flashcards</b><small>Recall words both ways</small><span class="card-arrow">Start →</span></button>
+        <button class="feature-card purple" data-go="quiz"><span class="feature-icon">✳</span><b>Quick quiz</b><small>Check what you remember</small><span class="card-arrow">Take quiz →</span></button>
+        <button class="feature-card green" data-go="dictionary"><span class="feature-icon">⌕</span><b>Dictionary</b><small>Search Numa vocabulary</small><span class="card-arrow">Browse →</span></button>
+        <button class="feature-card amber" data-go="grammar"><span class="feature-icon">¶</span><b>Grammar notes</b><small>Review the current rules</small><span class="card-arrow">Explore →</span></button>
+      </div>
+      <div class="panel daily-panel">
+        <div><div class="eyebrow">TODAY'S WORD</div><div id="dailyWord" class="word-display">ñai</div><div id="dailyMeaning" class="daily-meaning">good</div><p id="dailyNote" class="muted">A word you chose for Numa.</p></div>
+        <button id="dailyFlip" class="round-button" aria-label="Show another daily word" title="Another word">↻</button>
+      </div>
+      <div class="panel note-panel"><span class="note-symbol">i</span><div><b>Still a living language</b><p>Dictionary roots are marked provisional in your language notes. This app preserves that status and does not invent logographic glyphs that have not been designed yet.</p></div></div>
+    </section>
+
+    <section id="view-study" class="view hidden">
+      <div class="section-heading"><div><div class="eyebrow">MEMORY PRACTICE</div><h2>Flashcards</h2><p class="muted">Think of the answer, then flip the card.</p></div></div>
+      <div class="study-controls">
+        <label class="select-label">Direction
+          <select id="studyDirection"><option value="numa">Numa → English</option><option value="english">English → Numa</option></select>
+        </label>
+        <label class="select-label">Word set
+          <select id="studySet"><option value="all">All vocabulary</option><option value="core">Core starter set</option></select>
+        </label>
+      </div>
+      <div class="flashcard-wrap">
+        <button id="flashcard" class="flashcard" aria-label="Flip flashcard">
+          <span id="cardCounter" class="card-counter">CARD 1</span>
+          <span id="cardPrompt" class="flash-prompt">ñai</span>
+          <span id="cardHint" class="flash-hint">Tap to reveal answer</span>
+          <span id="cardAnswer" class="flash-answer hidden">good</span>
+        </button>
+      </div>
+      <div class="flash-actions"><button id="prevCard" class="secondary">← Previous</button><button id="nextCard" class="primary">Next →</button></div>
+      <div id="ratingActions" class="rating-actions hidden"><button data-rate="again" class="rate-again">Review again</button><button data-rate="known" class="rate-known">I knew it</button></div>
+      <p class="tiny muted center">Your progress is saved on this device.</p>
+    </section>
+
+    <section id="view-quiz" class="view hidden">
+      <div class="section-heading"><div><div class="eyebrow">QUICK RECALL</div><h2>Mini quiz</h2><p class="muted">Choose the correct meaning or Numa word.</p></div></div>
+      <div class="quiz-panel panel">
+        <div class="quiz-meta"><span id="quizProgress">QUESTION 1</span><span id="quizScore">Score: 0</span></div>
+        <div id="quizQuestion" class="quiz-question">What does “ñai” mean?</div>
+        <div id="quizOptions" class="quiz-options"></div>
+        <div id="quizFeedback" class="quiz-feedback" aria-live="polite"></div>
+        <button id="nextQuestion" class="primary full-width hidden">Next question →</button>
+        <button id="restartQuiz" class="secondary full-width hidden">Try another round</button>
+      </div>
+    </section>
+
+    <section id="view-dictionary" class="view hidden">
+      <div class="section-heading"><div><div class="eyebrow">WORD COLLECTION</div><h2>Dictionary</h2><p class="muted">Only vocabulary documented in the current Numa draft.</p></div></div>
+      <div class="search-box"><span>⌕</span><input id="dictionarySearch" type="search" placeholder="Search word or meaning…" autocomplete="off"><button id="clearSearch" aria-label="Clear search">×</button></div>
+      <div class="dictionary-meta"><span id="dictionaryResults">0 words</span><span>Provisional unless stated otherwise</span></div>
+      <div id="dictionaryList" class="dictionary-list"></div>
+    </section>
+
+    <section id="view-grammar" class="view hidden">
+      <div class="section-heading"><div><div class="eyebrow">CURRENT RULES</div><h2>Grammar notes</h2><p class="muted">A compact guide based on Numa Grammar & Dictionary v1.0.0.</p></div></div>
+      <div class="grammar-list">
+        <details open><summary>Word order</summary><p>The default order is <b>Subject–Verb–Object (SVO)</b>. Ordinary sentences use mostly fixed word order.</p><div class="example"><code>Pali penu mako.</code><span>The person sees the house. (roots provisional)</span></div></details>
+        <details><summary><code>mi-</code> depends on what it attaches to</summary><p>Before a noun, <code>mi-</code> means “my.” Before a verb, it marks the subject “I.”</p><div class="example"><code>mi-mako</code><span>my house / my home</span></div><div class="example"><code>mi-yavi Numa.</code><span>I speak Numa.</span></div><p><code>mi-</code> is not a standalone pronoun. <code>Misa</code> means “I/me.”</p></details>
+        <details><summary>Possession with <code>ti-</code></summary><p><code>ti-</code> attached to a noun means “your / belonging to the listener.” A second-person verb prefix has not been approved.</p><div class="example"><code>ti-mako</code><span>your house / your home</span></div></details>
+        <details><summary>Negation with <code>no-</code></summary><p>Attach <code>no-</code> to a verb to negate the action. The standalone response <code>non</code> means “no.”</p><div class="example"><code>Pali no-penu mako.</code><span>The person does not see the house.</span></div></details>
+        <details><summary>Questions</summary><p>Speech can mark questions through intonation. In writing, use an ordinary question mark. Numa does not have a finalized set of dedicated question words; a category or topic can be placed first when needed.</p><div class="example"><code>Veta mako?</code><span>Are you going home? Context supplies “you.”</span></div></details>
+        <details><summary>Movement and destinations</summary><p>A destination can follow a movement verb directly. A special “to” word or prefix is not required.</p><div class="example"><code>Misa veta mi-mako.</code><span>I am going to my house.</span></div></details>
+        <details><summary>One adjective suffix per word</summary><p>Only one adjective suffix may attach to a word under the current chosen direction. These suffix meanings are provisional.</p><div class="example"><code>mako-ki</code><span>small house</span></div><div class="example"><code>mako-ro</code><span>large house</span></div><p><code>mako-ki-ja</code> is invalid under this current rule.</p></details>
+        <details><summary>Writing system status</summary><p>Numa's writing system is intended to be meaning-based/logographic, with organic simplified drawing-like characters. Compounds are expected to have their own learned pronunciations and writing direction is left-to-right. The actual glyph inventory and compound-writing rules are still unfinished.</p></details>
+        <details><summary>Pronouns</summary><div class="example"><code>Misa</code><span>I / me</span></div><div class="example"><code>Tim</code><span>you</span></div><div class="example"><code>Po</code><span>he</span></div><div class="example"><code>Pa</code><span>she</span></div><div class="example"><code>Pe</code><span>ungendered / gender-unspecified third-person pronoun</span></div></details>
+      </div>
+      <div class="note-panel panel"><span class="note-symbol">!</span><div><b>Draft warning</b><p>Some grammar details remain unresolved, including how stative/intransitive sentences fit the verb-plus-object rule. Examples are retained as documented rather than silently “fixed.”</p></div></div>
+    </section>
+
+    <section id="view-script" class="view hidden">
+      <div class="section-heading"><div><div class="eyebrow">VISUAL LANGUAGE</div><h2>Numa script</h2><p class="muted">A place to study the writing system as it develops.</p></div></div>
+      <div class="script-card panel">
+        <div class="glyph-placeholder"><span>水?</span></div>
+        <div class="eyebrow">GLYPH WORKSHOP</div>
+        <h3>The glyph inventory is not designed yet.</h3>
+        <p>The writing system is planned to use meaning-based characters with organic, simplified shapes. This app intentionally does not present invented symbols as official Numa glyphs.</p>
+        <div class="script-facts"><div><span>Direction</span><b>Left → right</b></div><div><span>Concepts</span><b>Primarily compounds</b></div><div><span>Pronunciation</span><b>Learned per compound</b></div></div>
+      </div>
+      <h3 class="subheading">Good first concepts to design</h3>
+      <div class="concept-list">
+        <article class="concept-row"><span class="concept-number">01</span><div><b>ava</b><small>water</small><p>Recommended first glyph: explore a simple ripple or flowing shape.</p></div><span class="status-pill">Not designed</span></article>
+        <article class="concept-row"><span class="concept-number">02</span><div><b>pali</b><small>person</small><p>A simple human-like form could establish the visual style.</p></div><span class="status-pill">Not designed</span></article>
+      </div>
+    </section>
+
+    <footer class="footer"><span>NUMA · WORKING DRAFT</span><button id="exportProgress" class="text-button">Export progress</button><button id="resetProgress" class="text-button danger-text">Reset progress</button></footer>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "Numa — Learn your language",
+  "short_name": "Numa",
+  "description": "An offline-first vocabulary and grammar companion for Numa.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b111c",
+  "theme_color": "#101827",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
